@@ -10,6 +10,8 @@ router.get('/hello', async (req, res) => {
 
 router.get('/health', utilityCtl.checkDbConnectivity);
 
+router.get('/popularsearch', utilityCtl.getPopularSearch);
+
 module.exports = router;
 
 
