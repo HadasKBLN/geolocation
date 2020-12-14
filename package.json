@@ -20,6 +20,8 @@
   "homepage": "https://github.com/HadasKBLN/geolocation#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^5.11.7",
+    "node-fetch": "^2.6.1",
     "nodemon": "^2.0.6"
   }
 }
