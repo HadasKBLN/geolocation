@@ -11,22 +11,7 @@ const getDistance = async (req, res) => {
     Distance.findOne({source: src, destination: dest}).exec().
     then( distanceData => {
         if (distanceData === null){
-            distance_api(src, dest).
-                then( distance => {
-                    const newDistance = new Distance({
-                        source: src,
-                        destination: dest,
-                        distance: distance,
-                        hits: 1
-                    });
-                    newDistance.save()
-                    .catch( err => {
-                        console.log('err: '+ err);
-                        throw err;
-                        });
-                    res.status(200);
-                    res.json({'distance': distance});            
-                }); 
+            addDistance (res, src, dest);
         } 
         else{
             distance = distanceData.distance;
@@ -43,7 +28,30 @@ const getDistance = async (req, res) => {
             res.status(200);
             res.json({'distance': distance});
         } 
+    }).catch( err => {
+        addDistance (res, src, dest)
     });
 };
+
+const addDistance = (res, src, dest) => {
+    distance_api(src, dest).
+        then( distance => {
+            const newDistance = new Distance({
+                source: src,
+                destination: dest,
+                distance: distance,
+                hits: 1
+            });
+            newDistance.save()
+                .catch( err => {
+                    console.log('err: '+ err);
+                    throw err;
+                    });
+            res.status(200);
+            res.json({'distance': distance});            
+        }); 
+};
+
+
 
 module.exports = { getDistance };
