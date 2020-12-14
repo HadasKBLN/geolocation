@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const utilityCtl = require('../Controllers/utility.ctl')
 // const app = express();
 
 router.get('/hello', async (req, res) => {
-    // const t = await distance_api("Jerusalem", "Rehovot");
-    // console.log(t);
     res.status(200);
     res.json();
 });
+
+router.get('/health', utilityCtl.checkDbConnectivity);
 
 module.exports = router;
 
