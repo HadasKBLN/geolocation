@@ -7,6 +7,14 @@ const getDistance = async (req, res) => {
     const queryObject = url.parse(req.url,true).query;
     const src = queryObject['source'];
     const dest = queryObject['destination'];
+    
+    if( !src || !dest ){
+        const err = 'Incorrect URL';
+        console.log(err);
+        res.status(500);
+        res.json({'err': err});
+        return;
+    }
 
     Distance.findOne({source: src, destination: dest}).exec().
     then( distanceData => {
@@ -33,17 +41,22 @@ const getDistance = async (req, res) => {
     });
 };
 
-
-
 const ingestPair = (req, res) => {
-    const src = req.body.source;
-    const dest = req.body.destination;
-    const distance = req.body.distance;
+
+    const {source, destination, distance} = req.body;
+
+    if( !source || !destination || !distance ){
+        const err = 'Incorrect pair to ingest';
+        console.log(err);
+        res.status(500);
+        res.json({'err': err});
+        return;
+    }
     
-    Distance.findOne({source: src, destination: dest}).exec().
+    Distance.findOne({source: source, destination: destination}).exec().
     then( distanceData => {
         if (distanceData === null){
-            addPair ( src, dest, distance, 0 );
+            addPair ( source, destination, distance, 0 );
         } 
         else{
             const distancID = distanceData._id;
@@ -57,10 +70,10 @@ const ingestPair = (req, res) => {
             });
         }
         res.status(200);
-        res.json({'source': src, 
-                  'destination': dest, 
+        res.json({'source': source, 
+                  'destination': destination, 
                   'distance': distance}); 
-    });
+    }).catch(err => console.log(err));
 };
 
 const calcAndAddDistance = (res, src, dest) => {
@@ -85,7 +98,5 @@ const addPair = (src, dest, distance, hits) => {
             throw err;
             });
 };
-
-
 
 module.exports = { getDistance , ingestPair};

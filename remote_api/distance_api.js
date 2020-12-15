@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 
 const getDistance = async ( source, dest) => {
     const base_url = `https://www.merchak.org/route.json?`;
