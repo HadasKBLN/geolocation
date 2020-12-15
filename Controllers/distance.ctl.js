@@ -53,22 +53,18 @@ const ingestPair = (req, res) => {
         return;
     }
     
-    Distance.findOne({source: source, destination: destination}).exec().
+    Distance.findOneAndUpdate({source: source, destination: destination}, {
+        $set: {
+            distance: distance
+        }
+    }, { new: true }, (err, doc) => {
+        if(err !== null)
+            console.log('error while updating distance: '+ err)
+    }).exec().
     then( distanceData => {
         if (distanceData === null){
             addPair ( source, destination, distance, 0 );
         } 
-        else{
-            const distancID = distanceData._id;
-            Distance.findOneAndUpdate({ _id: distancID }, {
-                $set: {
-                    distance: distance
-                }
-            }, { new: true }, (err, doc) => {
-                if(err !== null)
-                    console.log('error while updating distance: '+ err)
-            });
-        }
         res.status(200);
         res.json({'source': source, 
                   'destination': destination, 
@@ -95,7 +91,6 @@ const addPair = (src, dest, distance, hits) => {
     newDistance.save()
         .catch( err => {
             console.log('err: '+ err);
-            throw err;
             });
 };
 
