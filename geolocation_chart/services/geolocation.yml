@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: geolocation-dev
+spec:
+  selector:
+    app: geolocation-dev
+  ports:
+    - protocol: TCP
+      name: http
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
