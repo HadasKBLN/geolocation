@@ -5,7 +5,8 @@ const db = mongoose.createConnection();
 console.log('Creating a DB');
 (async () => {
     try {
-        await db.openUri('mongodb://127.0.0.1:27017/Geolocation');
+        await db.openUri('mongodb://127.0.0.1:27017/Geolocation', 
+                        { useNewUrlParser: true , useUnifiedTopology: true });
     } catch (err) {
         console.log('Error connecting to DB: ' + err);
     }
