@@ -8,6 +8,8 @@ const HOST = '0.0.0.0';
 
 const app = express();
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use('/distance', distanceRouter);
 app.use('/', utilityRouter);

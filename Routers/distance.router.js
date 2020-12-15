@@ -4,11 +4,7 @@ const distanceCtl = require('../Controllers/distance.ctl');
 
 router.get('/*', distanceCtl.getDistance);
 
-router.post('/', async (req, res) => {
-    console.log('HIII');
-    res.status(200);
-    res.json();
-});
+router.post('/', distanceCtl.ingestPair);
 
 
 module.exports = router;

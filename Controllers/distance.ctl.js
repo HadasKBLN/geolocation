@@ -11,7 +11,7 @@ const getDistance = async (req, res) => {
     Distance.findOne({source: src, destination: dest}).exec().
     then( distanceData => {
         if (distanceData === null){
-            addDistance (res, src, dest);
+            calcAndAddDistance (res, src, dest);
         } 
         else{
             distance = distanceData.distance;
@@ -29,29 +29,63 @@ const getDistance = async (req, res) => {
             res.json({'distance': distance});
         } 
     }).catch( err => {
-        addDistance (res, src, dest)
+        calcAndAddDistance (res, src, dest)
     });
 };
 
-const addDistance = (res, src, dest) => {
+
+
+const ingestPair = (req, res) => {
+    const src = req.body.source;
+    const dest = req.body.destination;
+    const distance = req.body.distance;
+    
+    Distance.findOne({source: src, destination: dest}).exec().
+    then( distanceData => {
+        if (distanceData === null){
+            addPair ( src, dest, distance, 0 );
+        } 
+        else{
+            const distancID = distanceData._id;
+            Distance.findOneAndUpdate({ _id: distancID }, {
+                $set: {
+                    distance: distance
+                }
+            }, { new: true }, (err, doc) => {
+                if(err !== null)
+                    console.log('error while updating distance: '+ err)
+            });
+        }
+        res.status(200);
+        res.json({'source': src, 
+                  'destination': dest, 
+                  'distance': distance}); 
+    });
+};
+
+const calcAndAddDistance = (res, src, dest) => {
     distance_api(src, dest).
         then( distance => {
-            const newDistance = new Distance({
-                source: src,
-                destination: dest,
-                distance: distance,
-                hits: 1
-            });
-            newDistance.save()
-                .catch( err => {
-                    console.log('err: '+ err);
-                    throw err;
-                    });
+            addPair(src, dest, distance, 1);
             res.status(200);
             res.json({'distance': distance});            
         }); 
 };
 
+const addPair = (src, dest, distance, hits) => {
+    const newDistance = new Distance({
+        source: src,
+        destination: dest,
+        distance: distance,
+        hits: hits
+    });
+    newDistance.save()
+        .catch( err => {
+            console.log('err: '+ err);
+            throw err;
+            });
+};
 
 
-module.exports = { getDistance };
+
+module.exports = { getDistance , ingestPair};
